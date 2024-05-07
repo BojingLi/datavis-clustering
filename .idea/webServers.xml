@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d6c328c4-d1fe-44e0-b4ab-66a69f8c5351" name="datavis-clustering">
+        <fileTransfer accessType="SFTP" host="130.85.88.89" port="22" sshConfigId="413a0ecc-edcf-4bbf-9054-76b554994101" sshConfig="bojingli@130.85.88.89:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
