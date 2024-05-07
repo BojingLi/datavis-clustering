@@ -1,35 +1,34 @@
 
 
 import pandas as pd
+from readData import readDatabyState
+from readData import splitDataByYear
+from readData import aggrDataByYear
 
 
 
-def readDatabyState(stateName):
-    df = pd.read_excel('Patent by state and category.xlsx', sheet_name=stateName)
-    return df
-
-
-stateList = ['Alabama','Alaska']
-
-
-# stateList = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
-#              'Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
-#              'Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri',
-#              'Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina',
-#              'North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina',
-#              'South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',
-#              'Wisconsin','Wyoming','District of Columbia']
-
+#读取全部州的数据
+raw_state_data = {}
+stateList = ['Alabama','Alaska','Arizona','Arkansas']
 for state in stateList:
-    locals()[state] = readDatabyState(state)
-    # df = readDatabyState(state)
+    raw_state_data[state]  = readDatabyState(state)
+
+
+#把数据按照年份聚合
+year_dict = {
+    'period1': [1963, 1964, 1965],
+    'period2': [1966, 1967, 1968],
+    'period3': [1969, 1970, 1971, 1972]
+}
+split_state_all_period = splitDataByYear(raw_state_data,year_dict)
+aggr_state_all_period = aggrDataByYear(split_state_all_period)
 
 
 
 
 
+print('aaa')
 
-print('end')
 
 
 
