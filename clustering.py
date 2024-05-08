@@ -1,9 +1,12 @@
 
 
 import pandas as pd
-from readData import readDatabyState
-from readData import splitDataByYear
-from readData import aggrDataByYear
+from utils import readDatabyState
+from utils import splitDataByYear,aggrDataByYear,makeClusterData,myPCA,myStandard,myplot
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 
 
@@ -23,20 +26,24 @@ year_dict = {
 split_state_all_period = splitDataByYear(raw_state_data,year_dict)
 aggr_state_all_period = aggrDataByYear(split_state_all_period)
 
-# 每一个period中，州的数据聚合成可供聚类的数据
-period_data = aggr_state_all_period['period1']
-period_cluster = pd.DataFrame()
-for statename, statedata in period_data.items():
-    trans = period_data[statename].transpose()
-    trans.columns = trans.iloc[0]
-    trans = trans.drop("Class Title")
-    trans.rename(index={'period_total': statename}, inplace=True)
 
-    # 检查是否是第一次迭代
-    if period_cluster.empty:
-        period_cluster = trans  # 如果period_cluster是空的，直接赋值
-    else:
-        period_cluster = pd.concat([period_cluster, trans])  # 否则，连接现有的数据
+
+# 进行机器学习聚类操作
+ml_data = makeClusterData(aggr_state_all_period,year_dict)
+for key_period,value_data in ml_data.items():
+    subdata = ml_data[key_period]
+
+    # 保存州的索引,最后添加到每个聚类的圆点旁边
+    label_states = subdata.index
+
+    subdata = myStandard(subdata)
+    kmeans = KMeans(n_clusters=2, random_state=0).fit(subdata)
+    subdata = myPCA(subdata)
+    myplot(subdata,label_states,kmeans.labels_,str(year_dict[key_period]))
+
+
+
+
 
 
 

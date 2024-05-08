@@ -1,4 +1,8 @@
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 def readDatabyState(stateName):
     # df = pd.read_excel('Patent by state and category.xlsx', sheet_name=stateName)
@@ -45,3 +49,51 @@ def aggrDataByYear(dict_data):
             statedata.drop(columns=period, inplace=True)
             statedata.drop(columns='Class', inplace=True)
     return dict_data
+
+
+def makeClusterData(datadict,yeardict):
+#     把每一个时期数据转化为机器学习标准数据，每一行一个州，每一列一个特征（专利类型）
+    mldata = {}
+    for key in yeardict:
+        # 每一个period中，州的数据聚合成可供聚类的数据
+        period_data = datadict[key]
+        period_cluster = pd.DataFrame()
+        for statename, statedata in period_data.items():
+            trans = period_data[statename].transpose()
+            trans.columns = trans.iloc[0]
+            trans = trans.drop("Class Title")
+            trans.rename(index={'period_total': statename}, inplace=True)
+            # 检查是否是第一次迭代
+            if period_cluster.empty:
+                period_cluster = trans  # 如果period_cluster是空的，直接赋值
+            else:
+                period_cluster = pd.concat([period_cluster, trans])  # 否则，连接现有的数据
+            period_cluster.fillna(0, inplace=True)
+        mldata[key] = period_cluster
+    return mldata
+
+
+def myPCA(data):
+    pca = PCA(n_components=2)
+    data = pca.fit_transform(data)
+    return data
+
+def myStandard(data):
+    scaler = StandardScaler()
+    data = scaler.fit_transform(data)
+    return data
+
+def myplot(data,plot_label,color_label,figure_name):
+    plt.figure(figsize=(8, 6))
+    scatter = plt.scatter(data[:, 0], data[:, 1], c=color_label, cmap='viridis', alpha=0.5)
+    # 在散点图中为每个点添加名字标签
+    for i, txt in enumerate(plot_label):
+        plt.annotate(txt, (data[i, 0], data[i, 1]))
+    # 移除坐标轴刻度
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.title(figure_name)
+    colorbar = plt.colorbar(scatter)
+    colorbar.set_ticks([])
+    plt.show()
