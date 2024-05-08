@@ -43,4 +43,5 @@ def aggrDataByYear(dict_data):
         for statename, statedata in value.items():
             statedata['period_total'] = statedata[period].sum(axis=1)
             statedata.drop(columns=period, inplace=True)
+            statedata.drop(columns='Class', inplace=True)
     return dict_data
