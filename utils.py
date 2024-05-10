@@ -5,18 +5,12 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 def readDatabyState(stateName):
-    # df = pd.read_excel('Patent by state and category.xlsx', sheet_name=stateName)
-    df = pd.read_excel('testdata.xlsx', sheet_name=stateName)
+    df = pd.read_excel('Patent by state and category.xlsx', sheet_name=stateName)
+    # df = pd.read_excel('testdata.xlsx', sheet_name=stateName)
     return df
 
 
-# stateList = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
-#              'Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
-#              'Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri',
-#              'Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina',
-#              'North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina',
-#              'South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',
-#              'Wisconsin','Wyoming','District of Columbia']
+
 
 
 
@@ -38,11 +32,17 @@ def splitDataByYear(data_dict, year_dict):
 def aggrDataByYear(dict_data):
     for key, value in dict_data.items():
         if key.endswith('period1'):
-            period = [1963, 1964, 1965]
+            period = list(range(1963, 1971))
         elif key.endswith('period2'):
-            period = [1966, 1967, 1968]
+            period = list(range(1971, 1981))
+        elif key.endswith('period3'):
+            period = list(range(1981, 1991))
+        elif key.endswith('period4'):
+            period = list(range(1991, 2001))
+        elif key.endswith('period5'):
+            period = list(range(2001, 2011))
         else:
-            period = [1969, 1970, 1971, 1972]
+            period = list(range(2011, 2016))
 
         for statename, statedata in value.items():
             statedata['period_total'] = statedata[period].sum(axis=1)
@@ -67,7 +67,11 @@ def makeClusterData(datadict,yeardict):
             if period_cluster.empty:
                 period_cluster = trans  # 如果period_cluster是空的，直接赋值
             else:
-                period_cluster = pd.concat([period_cluster, trans])  # 否则，连接现有的数据
+                print("period_cluster="+period_cluster)
+                print("trans=" + trans)
+
+                # print('debug')
+                period_cluster = pd.concat([period_cluster, trans],ignore_index=True)  # 否则，连接现有的数据
             period_cluster.fillna(0, inplace=True)
         mldata[key] = period_cluster
     return mldata
@@ -96,4 +100,11 @@ def myplot(data,plot_label,color_label,figure_name):
     plt.title(figure_name)
     colorbar = plt.colorbar(scatter)
     colorbar.set_ticks([])
-    plt.show()
+
+    # plt.show()
+    # 保存图像到本地文件系统
+    plt.savefig(f"{figure_name}.png")
+    # 关闭图形以避免其显示
+    plt.close()
+
+

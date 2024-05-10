@@ -1,5 +1,3 @@
-
-
 import pandas as pd
 from utils import readDatabyState
 from utils import splitDataByYear,aggrDataByYear,makeClusterData,myPCA,myStandard,myplot
@@ -12,16 +10,28 @@ from sklearn.decomposition import PCA
 
 #读取全部州的数据
 raw_state_data = {}
-stateList = ['Alabama','Alaska','Arizona','Arkansas']
+# stateList = ['Alabama','Alaska','Arizona','Arkansas']
+stateList = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
+             'Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
+             'Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri',
+             'Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina',
+             'North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina',
+             'South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',
+             'Wisconsin','Wyoming','District of Columbia']
+
+
 for state in stateList:
     raw_state_data[state]  = readDatabyState(state)
 
 
 #把数据按照时期聚合
 year_dict = {
-    'period1': [1963, 1964, 1965],
-    'period2': [1966, 1967, 1968],
-    'period3': [1969, 1970, 1971, 1972]
+    'period1': list(range(1963, 1971)),  # 从1963到1970
+    'period2': list(range(1971, 1981)),  # 从1971到1980
+    'period3': list(range(1981, 1991)),
+    'period4': list(range(1991, 2001)),
+    'period5': list(range(2001, 2011)),
+    'period6': list(range(2011, 2016)),
 }
 split_state_all_period = splitDataByYear(raw_state_data,year_dict)
 aggr_state_all_period = aggrDataByYear(split_state_all_period)
