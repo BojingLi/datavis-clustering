@@ -5,17 +5,22 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
-from sklearn.cluster import SpectralClustering
 import plotly.express as px
-import plotly.express as px
-import pandas as pd
 from scipy.spatial import ConvexHull
-import numpy as np
 import plotly.graph_objects as go
 
+def myPCA(data):
+    pca = PCA(n_components=20)
+    data = pca.fit_transform(data)
+    return data
 
+def myStandard(data):
+    scaler = StandardScaler()
+    data = scaler.fit_transform(data)
+    data[np.isnan(data)] = 0
+    return data
 
-def myplot(data, plot_label, cluster_label, figure_name):
+def myplot(data,plot_label,cluster_label,figure_name):
     # 创建DataFrame来用于Plotly
     df = pd.DataFrame({
         'PCA1': data[:, 0],
@@ -32,10 +37,9 @@ def myplot(data, plot_label, cluster_label, figure_name):
     colors = px.colors.qualitative.Plotly[:len(unique_clusters)]
 
     # 从fig.data中提取每个簇的颜色
-    cluster_colors = {0:colors[0],1:colors[1],2:colors[2],3:colors[3],4:colors[4]}
+    cluster_colors = {0: colors[0], 1: colors[1], 2: colors[2], 3: colors[3], 4: colors[4]}
 
     testcolor = px.colors.qualitative.Plotly[:len(unique_clusters)]
-
 
     # 使用Plotly Express来生成散点图
     fig = px.scatter(df, x='PCA1', y='PCA2', color='Cluster',
@@ -46,16 +50,16 @@ def myplot(data, plot_label, cluster_label, figure_name):
 
     # 计算并绘制每个聚类的凸包
     for cluster in unique_clusters:
-        if cluster=='A':
-            flag=0
-        elif cluster=='B':
-            flag =1
-        elif cluster=='C':
-            flag =2
-        elif cluster=='D':
-            flag =3
-        elif cluster=='E':
-            flag =4
+        if cluster == 'A':
+            flag = 0
+        elif cluster == 'B':
+            flag = 1
+        elif cluster == 'C':
+            flag = 2
+        elif cluster == 'D':
+            flag = 3
+        elif cluster == 'E':
+            flag = 4
         else:
             flag = 999
         points = df[df['Cluster'] == cluster][['PCA1', 'PCA2']].values
@@ -75,23 +79,14 @@ def myplot(data, plot_label, cluster_label, figure_name):
                       coloraxis_showscale=False,
                       hoverlabel=dict(bgcolor="white", font_size=12, font_family="Rockwell"))
 
-    # 显示图表
+    # # 显示图表
     fig.show()
 
-
-
-def myPCA(data):
-    pca = PCA(n_components=2)
-    data = pca.fit_transform(data)
-    return data
-
-def myStandard(data):
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
-    data[np.isnan(data)] = 0
-    return data
-
-
+    # plt.show()
+    # 保存图像到本地文件系统
+    # fig.write_image(f"figures/{figure_name}.png")
+    # 关闭图形以避免其显示
+    # fig.close()
 
 
 
@@ -104,34 +99,23 @@ year_dict = {
     'period5': list(range(2001, 2011)),
     'period6': list(range(2011, 2016)),
 }
+if not os.path.exists('figures'):
+    os.makedirs('figures')
+
+for key_year in year_dict.keys():
+    ml_data = pd.read_csv(str('data/mldata_'+ key_year + '.csv'))
+    ml_data.set_index(ml_data.columns[0], inplace=True, drop=True)
+    ml_data.fillna(0, inplace=True)
+
+    label_states = ml_data.index
+    ml_data = myStandard(ml_data)
+    kmeans = KMeans(n_clusters=5, random_state=0).fit(ml_data)
+    # ml_data = myPCA(ml_data)
+    myplot(ml_data, label_states, kmeans.labels_, key_year)
+    # myplot(data, plot_label, color_label, key_year)
 
 
-
-ml_data = pd.read_csv(str('data/mldata_period1.csv'))
-ml_data.set_index(ml_data.columns[0], inplace=True, drop=True)
-ml_data.fillna(0, inplace=True)
-
-label_states = ml_data.index
-ml_data = myStandard(ml_data)
-ml_data = myPCA(ml_data)
-
-
-#kmeans聚类
-# kmeans = KMeans(n_clusters=5, random_state=0).fit(ml_data)
-# labels = kmeans.labels_
-
-# 光谱聚类
-spectral = SpectralClustering(n_clusters=5, affinity='nearest_neighbors', random_state=0)
-spectral.fit(ml_data)
-labels = spectral.labels_
-
-
-
-key_year = 'test'
-myplot(ml_data, label_states, labels, key_year)
-
-
-
+    print('e')
 
 
 

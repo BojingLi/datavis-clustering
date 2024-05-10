@@ -25,8 +25,7 @@ for key_year in year_dict.keys():
             ml_data = temp.copy()
         else:
             ml_data = pd.concat([ml_data, temp],ignore_index=True)
-    ml_data.set_index(ml_data.columns[0], inplace=True, drop=True)
-    ml_data.fillna(0)
+
     saveFile = str('mldata_'+key_year +'.csv')
     path = os.path.join('data', saveFile)
     ml_data.to_csv(path, index=True)
