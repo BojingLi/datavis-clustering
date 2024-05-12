@@ -1,0 +1,30 @@
+
+1.How to run?
+Run step1, step2 and step3 sequentially,which may require necessary python packages to be installed.
+This dataset contains patent application data for all 50 states, 52 years, and more than 400 classes.
+The overly large sample size makes it impossible to run in the same python code (too much memory usage + runs slowly),
+so I split it into three steps.
+
+
+2.author and purpose:
+Bojing Li for Data Visualization HW3
+
+
+3.Explain of this project:
+Idea: Find states with more similar patent applications through clustering and find connections. Once you find which
+states have similar patent filing preferences, it can be very helpful for universities, governments, and businesses.
+For example, if a company wants to recruit graduates in A, then it can consider universities in several states with
+similar patenting preferences.
+
+3.1 The first step divides the years 1963 to 2015 into every decade or counts the entire number of patents.
+If divided per decade, then do a clustering of the data for each decade to get several different clusters
+integrated together.
+
+3.2 The second step treats each kind of data as a feature in machine learning and clusters all 50 states by 389 features.
+
+3.3 The third step visualizes the clustering results and ideally clusters the 50 states into different categories.
+
+3.4 Step 4 Analyze the clustering results by analyzing the clustering correlation by comparing it with GDP dataset,
+population dataset, geographic location, etc (all datasets we already have). For example, if state A and state B have
+similar patenting preferences, then let's go ahead and analyze if both states have similar populations? Similar geographic
+locations? Similar GDP?

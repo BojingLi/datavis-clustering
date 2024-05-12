@@ -20,10 +20,10 @@ def splitDataByYear(data_dict, year_dict):
     # 按照年份截取
     split_state_all_period = {}
     for period_name, period_data in year_dict.items():
-        split_state_period = {}  # 创建一个新的字典来存储当前周期的数据
+        split_state_period = {}  # Create a new dictionary to store data for the current period
         selected_columns = ['Class', 'Class Title'] + period_data
         for state_name, state_data in data_dict.items():
-            # 从每个州的数据中选取特定的列
+            # Select specific columns from each state's data
             split_state_period[state_name] = state_data[selected_columns]
         split_state_all_period[period_name] = split_state_period
 
@@ -55,10 +55,11 @@ def aggrDataByYear(dict_data):
 def saveDatatoCluster(datadict,yeardict):
     if not os.path.exists('data'):
         os.makedirs('data')
-#     把每一个时期数据转化为机器学习标准数据，每一行一个州，每一列一个特征（专利类型）
+#     Convert each period of data into machine learning standard data,
+    #     one state per row, one feature per column (patent class)
     mldata = {}
     for key in yeardict:
-        # 每一个period中，州的数据聚合成可供聚类的数据
+        # In each period, state data is aggregated into data available for clustering
         period_data = datadict[key]
         period_cluster = pd.DataFrame()
         for statename, statedata in period_data.items():
@@ -73,9 +74,8 @@ def saveDatatoCluster(datadict,yeardict):
             trans.to_csv(path, index=True)
 
 
-#读取全部州的数据
+#Read all states
 raw_state_data = {}
-# stateList = ['Alabama','Alaska','Arizona','Arkansas']
 stateList = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
              'Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
              'Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri',
@@ -89,10 +89,10 @@ for state in stateList:
     raw_state_data[state]  = readDatabyState(state)
 
 
-#把数据按照时期聚合
+#Aggregate data by period
 year_dict = {
-    'period1': list(range(1963, 1971)),  # 从1963到1970
-    'period2': list(range(1971, 1981)),  # 从1971到1980
+    'period1': list(range(1963, 1971)),
+    'period2': list(range(1971, 1981)),
     'period3': list(range(1981, 1991)),
     'period4': list(range(1991, 2001)),
     'period5': list(range(2001, 2011)),

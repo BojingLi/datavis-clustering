@@ -3,8 +3,8 @@ import os
 import warnings
 warnings.filterwarnings('ignore')
 year_dict = {
-    'period1': list(range(1963, 1971)),  # 从1963到1970
-    'period2': list(range(1971, 1981)),  # 从1971到1980
+    'period1': list(range(1963, 1971)),
+    'period2': list(range(1971, 1981)),
     'period3': list(range(1981, 1991)),
     'period4': list(range(1991, 2001)),
     'period5': list(range(2001, 2011)),
@@ -33,4 +33,3 @@ for key_year in year_dict.keys():
     ml_data.set_index(ml_data.columns[0], inplace=True)
     ml_data.to_csv(path, index=True)
 
-print('end')

@@ -23,16 +23,16 @@ def myStandard(data):
     return data
 
 def split_labels(labels, max_per_line=15):
-    """将标签列表分成每行最多max_per_line个的多行文本"""
+    # Split labeled lists into multiline text of up to max_per_line
     lines = []
     for i in range(0, len(labels), max_per_line):
         line = ', '.join(labels[i:i+max_per_line])
         lines.append(line)
-    return '<br>'.join(lines)  # 使用HTML的换行符来分行
+    return '<br>'.join(lines)
 
 
 def myplot(data, plot_label, cluster_label, figure_name):
-    # 创建DataFrame来用于Plotly
+
     df = pd.DataFrame({
         'PCA1': data[:, 0],
         'PCA2': data[:, 1],
@@ -43,21 +43,22 @@ def myplot(data, plot_label, cluster_label, figure_name):
     df = df.sort_values(by='Cluster', ascending=True)
     df['Cluster'] = df['Cluster'].replace({0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E'})
 
-    # 定义离散颜色列表
+    # Defining discrete color lists
     unique_clusters = df['Cluster'].unique()
     colors = px.colors.qualitative.Plotly[:len(unique_clusters)]
 
-    # 使用Plotly Express来生成散点图
+    # Using Plotly Express to Generate Scatterplots
     fig = px.scatter(df, x='PCA1', y='PCA2', color='Cluster',
                      title=figure_name,
                      color_discrete_sequence=colors,
                      hover_name='Label',
                      hover_data={'Cluster': False, 'PCA1': False, 'PCA2': False})
 
-    # 准备左上角的注释文本
+    # Prepare the annotated text in the upper left corner
     annotations = []
     y_pos = 1.0
-    vertical_spacing = 0.04  # 根据换行数量调整行间距
+    # Adjust line spacing according to the number of line breaks
+    vertical_spacing = 0.04
 
     for cluster in unique_clusters:
         labels = df[df['Cluster'] == cluster]['Label'].unique()
@@ -70,14 +71,14 @@ def myplot(data, plot_label, cluster_label, figure_name):
             text=annotation_text,
             showarrow=False,
             align='left',
-            bgcolor='rgba(0, 0, 0, 0)',  # 设置注释背景为透明
+            bgcolor='rgba(0, 0, 0, 0)',
             font=dict(family='Arial', size=12, color=colors[unique_clusters.tolist().index(cluster)])
         ))
-        # 更新下一个注释的y位置，根据行数动态调整
+        # Update the y position of the next annotation, dynamically adjusted according to the number of lines
         y_pos -= vertical_spacing * (label_text.count('<br>') + 1)
 
         points = df[df['Cluster'] == cluster][['PCA1', 'PCA2']].values
-        if points.shape[0] > 2:  # 凸包至少需要三点
+        if points.shape[0] > 2:  # shape need at least three
             hull = ConvexHull(points)
             x_hull = np.append(points[hull.vertices, 0], points[hull.vertices, 0][0])
             y_hull = np.append(points[hull.vertices, 1], points[hull.vertices, 1][0])
@@ -85,7 +86,7 @@ def myplot(data, plot_label, cluster_label, figure_name):
                                      line=dict(color=colors[unique_clusters.tolist().index(cluster)], width=2),
                                      showlegend=False))
 
-    # 更新布局以添加注释和隐藏坐标轴标签
+    # Update layout to add annotations and hide axis labels
     fig.update_layout(
         annotations=annotations,
         xaxis={'visible': False, 'showticklabels': False},
@@ -95,15 +96,14 @@ def myplot(data, plot_label, cluster_label, figure_name):
         hoverlabel=dict(bgcolor="white", font_size=12, font_family="Rockwell")
     )
 
-    # 显示图表
     fig.show()
 
 
 
 
 year_dict = {
-    'period1': list(range(1963, 1971)),  # 从1963到1970
-    'period2': list(range(1971, 1981)),  # 从1971到1980
+    'period1': list(range(1963, 1971)),
+    'period2': list(range(1971, 1981)),
     'period3': list(range(1981, 1991)),
     'period4': list(range(1991, 2001)),
     'period5': list(range(2001, 2011)),
