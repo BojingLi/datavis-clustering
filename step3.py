@@ -7,6 +7,7 @@ from sklearn.decomposition import PCA
 import numpy as np
 import plotly.express as px
 from scipy.spatial import ConvexHull
+from sklearn.cluster import SpectralClustering
 import plotly.graph_objects as go
 import warnings
 warnings.filterwarnings('ignore')
@@ -118,8 +119,17 @@ for key_year in year_dict.keys():
 
     label_states = ml_data.index
     ml_data = myStandard(ml_data)
-    kmeans = KMeans(n_clusters=5, random_state=0).fit(ml_data)
-    myplot(ml_data, label_states, kmeans.labels_, str(year_dict[key_year]))
+
+
+
+    # K-MEANS/SpectralClustering,Clustering using the similarity matrix of the data is suitable
+    # for solving the clustering problem of complex multidimensional data
+    cluster_model = KMeans(n_clusters=5, random_state=0).fit(ml_data)
+    # cluster_model = SpectralClustering(n_clusters=5, affinity='nearest_neighbors', random_state=0).fit(ml_data)
+    labels = cluster_model.labels_
+
+
+    myplot(ml_data, label_states, labels, str(year_dict[key_year]))
 
 
 
