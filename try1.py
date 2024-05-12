@@ -46,25 +46,13 @@ def myplot(data, plot_label, cluster_label, figure_name):
 
     # 计算并绘制每个聚类的凸包
     for cluster in unique_clusters:
-        if cluster=='A':
-            flag=0
-        elif cluster=='B':
-            flag =1
-        elif cluster=='C':
-            flag =2
-        elif cluster=='D':
-            flag =3
-        elif cluster=='E':
-            flag =4
-        else:
-            flag = 999
         points = df[df['Cluster'] == cluster][['PCA1', 'PCA2']].values
         if points.shape[0] > 2:  # 凸包至少需要三点
             hull = ConvexHull(points)
             x_hull = np.append(points[hull.vertices, 0], points[hull.vertices, 0][0])
             y_hull = np.append(points[hull.vertices, 1], points[hull.vertices, 1][0])
             fig.add_trace(go.Scatter(x=x_hull, y=y_hull, mode='lines',
-                                     line=dict(color=testcolor[flag], width=2),
+                                     line=dict(color=colors[unique_clusters.tolist().index(cluster)], width=2),
                                      showlegend=False))
 
     # 更新布局以隐藏坐标轴标签和调整颜色条

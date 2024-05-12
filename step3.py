@@ -20,7 +20,7 @@ def myStandard(data):
     data[np.isnan(data)] = 0
     return data
 
-def myplot(data,plot_label,cluster_label,figure_name):
+def myplot(data, plot_label, cluster_label, figure_name):
     # 创建DataFrame来用于Plotly
     df = pd.DataFrame({
         'PCA1': data[:, 0],
@@ -36,57 +36,61 @@ def myplot(data,plot_label,cluster_label,figure_name):
     unique_clusters = df['Cluster'].unique()
     colors = px.colors.qualitative.Plotly[:len(unique_clusters)]
 
-    # 从fig.data中提取每个簇的颜色
-    cluster_colors = {0: colors[0], 1: colors[1], 2: colors[2], 3: colors[3], 4: colors[4]}
-
-    testcolor = px.colors.qualitative.Plotly[:len(unique_clusters)]
-
     # 使用Plotly Express来生成散点图
     fig = px.scatter(df, x='PCA1', y='PCA2', color='Cluster',
                      title=figure_name,
-                     color_discrete_sequence=testcolor,
+                     color_discrete_sequence=colors,
                      hover_name='Label',
-                     hover_data={'Cluster': False})
+                     hover_data={'Cluster': False, 'PCA1': False, 'PCA2': False})
 
-    # 计算并绘制每个聚类的凸包
+    # 准备左上角的注释文本
+    annotations = []
+    y_pos = 1.0
+    # 根据最大标签数调整行间距
+    max_labels = max([len(df[df['Cluster'] == cluster]['Label'].unique()) for cluster in unique_clusters])
+    vertical_spacing = 0.02  # 行间距，根据需要调整
+
     for cluster in unique_clusters:
-        if cluster == 'A':
-            flag = 0
-        elif cluster == 'B':
-            flag = 1
-        elif cluster == 'C':
-            flag = 2
-        elif cluster == 'D':
-            flag = 3
-        elif cluster == 'E':
-            flag = 4
-        else:
-            flag = 999
+        labels = df[df['Cluster'] == cluster]['Label'].unique()
+        label_text = ', '.join(labels)  # 将标签用逗号分开
+        annotations.append(dict(
+            xref='paper', yref='paper',
+            x=0, y=y_pos,
+            xanchor='left', yanchor='top',
+            text=f"Cluster {cluster}: {label_text}",
+            showarrow=False,
+            align='left',
+            bgcolor='rgba(0, 0, 0, 0)',  # 设置注释背景为透明
+            font=dict(family='Arial', size=12, color=colors[unique_clusters.tolist().index(cluster)])
+        ))
+        # 更新下一个注释的y位置
+        y_pos -= vertical_spacing
+
         points = df[df['Cluster'] == cluster][['PCA1', 'PCA2']].values
         if points.shape[0] > 2:  # 凸包至少需要三点
             hull = ConvexHull(points)
             x_hull = np.append(points[hull.vertices, 0], points[hull.vertices, 0][0])
             y_hull = np.append(points[hull.vertices, 1], points[hull.vertices, 1][0])
             fig.add_trace(go.Scatter(x=x_hull, y=y_hull, mode='lines',
-                                     line=dict(color=testcolor[flag], width=2),
+                                     line=dict(color=colors[unique_clusters.tolist().index(cluster)], width=2),
                                      showlegend=False))
 
-    # 更新布局以隐藏坐标轴标签和调整颜色条
-    fig.update_traces(marker=dict(size=10))
-    fig.update_layout(xaxis={'visible': False, 'showticklabels': False},
-                      yaxis={'visible': False, 'showticklabels': False},
-                      legend_title_text='Cluster',
-                      coloraxis_showscale=False,
-                      hoverlabel=dict(bgcolor="white", font_size=12, font_family="Rockwell"))
 
-    # # 显示图表
+
+
+
+    # 更新布局以添加注释和隐藏坐标轴标签
+    fig.update_layout(
+        annotations=annotations,
+        xaxis={'visible': False, 'showticklabels': False},
+        yaxis={'visible': False, 'showticklabels': False},
+        legend_title_text='Cluster',
+        coloraxis_showscale=False,
+        hoverlabel=dict(bgcolor="white", font_size=12, font_family="Rockwell")
+    )
+
+    # 显示图表
     fig.show()
-
-    # plt.show()
-    # 保存图像到本地文件系统
-    # fig.write_image(f"figures/{figure_name}.png")
-    # 关闭图形以避免其显示
-    # fig.close()
 
 
 
