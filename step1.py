@@ -7,14 +7,15 @@ import warnings
 import numpy as np
 from functools import reduce
 import os
-
-# warnings.filterwarnings('ignore')
+import warnings
+warnings.filterwarnings('ignore')
 
 def readDatabyState(stateName):
     df = pd.read_excel('Patent by state and category.xlsx', sheet_name=stateName)
     # df = pd.read_excel('testdata.xlsx', sheet_name=stateName)
     df.drop(df.index[-1], inplace=True)
     return df
+
 def splitDataByYear(data_dict, year_dict):
     # 按照年份截取
     split_state_all_period = {}
@@ -27,6 +28,7 @@ def splitDataByYear(data_dict, year_dict):
         split_state_all_period[period_name] = split_state_period
 
     return split_state_all_period
+
 def aggrDataByYear(dict_data):
     for key, value in dict_data.items():
         if key.endswith('period1'):
@@ -96,6 +98,7 @@ year_dict = {
     'period5': list(range(2001, 2011)),
     'period6': list(range(2011, 2016)),
 }
+
 split_state_all_period = splitDataByYear(raw_state_data,year_dict)
 aggr_state_all_period = aggrDataByYear(split_state_all_period)
 saveDatatoCluster(aggr_state_all_period,year_dict)

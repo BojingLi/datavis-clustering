@@ -1,5 +1,7 @@
 import pandas as pd
 import os
+import warnings
+warnings.filterwarnings('ignore')
 year_dict = {
     'period1': list(range(1963, 1971)),  # 从1963到1970
     'period2': list(range(1971, 1981)),  # 从1971到1980
@@ -28,6 +30,7 @@ for key_year in year_dict.keys():
 
     saveFile = str('mldata_'+key_year +'.csv')
     path = os.path.join('data', saveFile)
+    ml_data.set_index(ml_data.columns[0], inplace=True)
     ml_data.to_csv(path, index=True)
 
 print('end')

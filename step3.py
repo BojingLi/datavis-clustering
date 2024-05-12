@@ -8,6 +8,8 @@ import numpy as np
 import plotly.express as px
 from scipy.spatial import ConvexHull
 import plotly.graph_objects as go
+import warnings
+warnings.filterwarnings('ignore')
 
 def myPCA(data):
     pca = PCA(n_components=20)
@@ -107,8 +109,7 @@ year_dict = {
     'period5': list(range(2001, 2011)),
     'period6': list(range(2011, 2016)),
 }
-if not os.path.exists('figures'):
-    os.makedirs('figures')
+
 
 for key_year in year_dict.keys():
     ml_data = pd.read_csv(str('data/mldata_'+ key_year + '.csv'))
