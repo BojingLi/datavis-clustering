@@ -119,13 +119,13 @@ for key_year in year_dict.keys():
 
     label_states = ml_data.index
     ml_data = myStandard(ml_data)
-
+    ml_data = myPCA(ml_data)
 
 
     # K-MEANS/SpectralClustering,Clustering using the similarity matrix of the data is suitable
     # for solving the clustering problem of complex multidimensional data
-    cluster_model = KMeans(n_clusters=5, random_state=0).fit(ml_data)
-    # cluster_model = SpectralClustering(n_clusters=5, affinity='nearest_neighbors', random_state=0).fit(ml_data)
+    # cluster_model = KMeans(n_clusters=5, random_state=0).fit(ml_data)
+    cluster_model = SpectralClustering(n_clusters=5, affinity='nearest_neighbors', random_state=0).fit(ml_data)
     labels = cluster_model.labels_
 
 
