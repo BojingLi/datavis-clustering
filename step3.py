@@ -20,6 +20,15 @@ def myStandard(data):
     data[np.isnan(data)] = 0
     return data
 
+def split_labels(labels, max_per_line=15):
+    """将标签列表分成每行最多max_per_line个的多行文本"""
+    lines = []
+    for i in range(0, len(labels), max_per_line):
+        line = ', '.join(labels[i:i+max_per_line])
+        lines.append(line)
+    return '<br>'.join(lines)  # 使用HTML的换行符来分行
+
+
 def myplot(data, plot_label, cluster_label, figure_name):
     # 创建DataFrame来用于Plotly
     df = pd.DataFrame({
@@ -46,25 +55,24 @@ def myplot(data, plot_label, cluster_label, figure_name):
     # 准备左上角的注释文本
     annotations = []
     y_pos = 1.0
-    # 根据最大标签数调整行间距
-    max_labels = max([len(df[df['Cluster'] == cluster]['Label'].unique()) for cluster in unique_clusters])
-    vertical_spacing = 0.02  # 行间距，根据需要调整
+    vertical_spacing = 0.04  # 根据换行数量调整行间距
 
     for cluster in unique_clusters:
         labels = df[df['Cluster'] == cluster]['Label'].unique()
-        label_text = ', '.join(labels)  # 将标签用逗号分开
+        label_text = split_labels(labels)  # 分行处理
+        annotation_text = f"Cluster {cluster}: {label_text}"
         annotations.append(dict(
             xref='paper', yref='paper',
             x=0, y=y_pos,
             xanchor='left', yanchor='top',
-            text=f"Cluster {cluster}: {label_text}",
+            text=annotation_text,
             showarrow=False,
             align='left',
             bgcolor='rgba(0, 0, 0, 0)',  # 设置注释背景为透明
             font=dict(family='Arial', size=12, color=colors[unique_clusters.tolist().index(cluster)])
         ))
-        # 更新下一个注释的y位置
-        y_pos -= vertical_spacing
+        # 更新下一个注释的y位置，根据行数动态调整
+        y_pos -= vertical_spacing * (label_text.count('<br>') + 1)
 
         points = df[df['Cluster'] == cluster][['PCA1', 'PCA2']].values
         if points.shape[0] > 2:  # 凸包至少需要三点
@@ -74,10 +82,6 @@ def myplot(data, plot_label, cluster_label, figure_name):
             fig.add_trace(go.Scatter(x=x_hull, y=y_hull, mode='lines',
                                      line=dict(color=colors[unique_clusters.tolist().index(cluster)], width=2),
                                      showlegend=False))
-
-
-
-
 
     # 更新布局以添加注释和隐藏坐标轴标签
     fig.update_layout(
@@ -114,12 +118,9 @@ for key_year in year_dict.keys():
     label_states = ml_data.index
     ml_data = myStandard(ml_data)
     kmeans = KMeans(n_clusters=5, random_state=0).fit(ml_data)
-    # ml_data = myPCA(ml_data)
-    myplot(ml_data, label_states, kmeans.labels_, key_year)
-    # myplot(data, plot_label, color_label, key_year)
+    myplot(ml_data, label_states, kmeans.labels_, str(year_dict[key_year]))
 
 
-    print('e')
 
 
 
